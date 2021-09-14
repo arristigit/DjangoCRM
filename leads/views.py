@@ -1,4 +1,3 @@
-from django.db.models import query
 from django.shortcuts import redirect, render, reverse
 from leads.models import * 
 from leads.forms import *
@@ -93,7 +92,7 @@ class LeadDeleteView(OrganisorAndLoginRequiredMixin, generic.DeleteView):
         user = self.request.user
         # initial queryset of leads for the entire organisation
         return Lead.objects.filter(organisation=user.userprofile)
-        
+
 # Function based views:
 def landing_page(request):
     return render(request, 'landing.html')
