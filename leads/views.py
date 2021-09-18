@@ -106,6 +106,27 @@ class LeadDeleteView(OrganisorAndLoginRequiredMixin, generic.DeleteView):
         # initial queryset of leads for the entire organisation
         return Lead.objects.filter(organisation=user.userprofile)
 
+class AssignAgentView(OrganisorAndLoginRequiredMixin, generic.FormView):
+    template_name = "leads/assign_agent.html"
+    form_class = AssignAgentForm
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(AssignAgentView, self).get_form_kwargs(**kwargs)
+        kwargs.update({
+            "request": self.request
+        })
+        return kwargs
+
+    def get_success_url(self):
+        return reverse("leads:lead-list")
+
+    def form_valid(self, form):
+        agent = form.cleaned_data["agent"]
+        lead = Lead.objects.get(id=self.kwargs["pk"])
+        lead.agent = agent
+        lead.save()
+        return super(AssignAgentView, self).form_valid(form)
+
 # Function based views:
 def landing_page(request):
     return render(request, 'landing.html')
