@@ -45,8 +45,6 @@ class LeadListView(LoginRequiredMixin, generic.ListView):
                 "unassigned_leads": queryset
             })
         return context
-    
-    
 
 class LeadDetailView(LoginRequiredMixin, generic.DetailView): 
     template_name = "leads/lead_details.html"
@@ -126,6 +124,19 @@ class AssignAgentView(OrganisorAndLoginRequiredMixin, generic.FormView):
         lead.agent = agent
         lead.save()
         return super(AssignAgentView, self).form_valid(form)
+
+class CategoryListView(LoginRequiredMixin, generic.ListView):
+    template_name = "leads/category_list.html"
+    context_object_name = "category_list"
+
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of leads for the entire organisation
+        if user.is_organisor:
+            queryset = Category.objects.filter(organisation=user.userprofile)
+        else:
+            queryset = Category.objects.filter(organisation=user.agent.organisation)
+        return queryset
 
 # Function based views:
 def landing_page(request):
